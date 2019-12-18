@@ -1,0 +1,12 @@
+{
+    "name": "BaconBot",
+    "version": "0.0.1",
+    "description": "Gain !bacon based on time spent in the server!",
+    "main": "bot.js",
+    "author": "",
+    "dependencies": {
+        "discord.js": "^11.5.1",
+        "firebase": "^7.6.0",
+        "firebase-admin": "^8.8.0"
+    }
+}
