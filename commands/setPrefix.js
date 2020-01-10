@@ -1,6 +1,8 @@
 module.exports = {
     name: 'setPrefix',
-    description: 'Set a new custom prefix for the server',
+    aliases: ['prefix'],
+    description: 'Sets a new prefix for commands. For server use only. Default is !',
+    guildOnly: true,
     execute(client, msg, args, db) {
         if (args.length < 1) return msg.reply('You seem to be missing a prefix');
         let nPrefix = args[0];
