@@ -2,11 +2,12 @@ const Discord = require('discord.js')
 
 module.exports = {
     name: 'help',
+    aliases: ['commands', 'command'],
     description: 'Lists all commands / Get help with a specific command',
     usage: '/ !help <command>',
     execute(client, msg, args, db, prefix) {
         msg.content.trim();
-        if (msg.content.length <= 5) {
+        if (!args.length) {
             let reply = new Discord.RichEmbed()
                 .setColor('#0099ff')
                 .setTitle('Supported Commands for !BaconBot')
@@ -14,26 +15,33 @@ module.exports = {
                 .addBlankField();
 
             client.commands.forEach(command => {
-                let tmp_reply_description = '';
-                let tmp_reply = `${prefix}${command.name}`;
+                let description = '';
+                let info = `${prefix}${command.name}`;
                 if (command.usage) {
-                    tmp_reply += ` ${command.usage}`;
+                    info += ` ${command.usage}`;
+                }
+                if (command.aliases) {
+                    info += '\nAliase(s): '
+                    command.aliases.forEach(alias => {
+                        info += `${prefix}${alias} / `;
+                    });
+                    info = info.slice(0, info.length - 3);
                 }
                 if (command.description) {
-                    tmp_reply_description = `${command.description}`;
+                    description = `${command.description}`;
                 }
-                reply.addField(tmp_reply, tmp_reply_description);
+                reply.addField(info, description);
             });
-            return msg.channel.send({embed: reply});
+            return msg.author.send({embed: reply});
         }
 
-        if (args.length > 1) return msg.reply(' you have typed in too many arguements. The !help command only supports 1 optional arguement.')
+        if (args.length != 1) return msg.reply(` you have typed in too many arguements. The ${prefix}help command only supports 1 optional arguement.`)
 
         const commandName = args.shift();
+        const command = client.commands.get(commandName)
+            || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-        if (!client.commands.get(commandName)) return msg.reply(' that command does not exist. Please refer to !help for a list of supported commands.');
-
-        const command = client.commands.get(commandName);
+        if (!command) return msg.reply(` that command does not exist. Please refer to ${prefix}help for a list of supported commands.`);
 
         let reply = new Discord.RichEmbed()
             .setColor('#0099ff')
@@ -46,12 +54,19 @@ module.exports = {
         if (command.usage) {
             info += ` ${command.usage}`;
         }
+        if (command.aliases) {
+            info += '\nAliase(s): '
+            command.aliases.forEach(alias => {
+                info += `${prefix}${alias} / `;
+            });
+            info = info.slice(0, info.length - 3);
+        }
         if (command.description) {
             description += `${command.description}`;
         }
 
         reply.addField(info, description);
-        return msg.channel.send({embed: reply});
+        return msg.author.send({embed: reply});
 
     },
 };
